@@ -6,14 +6,14 @@
 #include <string>
 #include <sstream>
 
-#ifdef DEBUG
+//#ifdef DEBUG
     #define ASSERT(x) if (!(x)) __debugbreak();
     #define GLCall(x) GLClearError();\
         x;\
         ASSERT(GLLogCall(#x, __FILE__, __LINE__))
-#else // DEBUG
+/*#else // DEBUG
     #define GLCall(x) x;
-#endif
+#endif*/
 static void GLClearError()
 {
     while (glGetError() != GL_NO_ERROR);
@@ -72,7 +72,7 @@ static unsigned int CompileShader(unsigned int type, const std::string& source)
     glCompileShader(id);
 
     int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE)
     {
         int length;
@@ -124,6 +124,8 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+
+    glfwSwapInterval(1);
     
     if (glewInit() != GLEW_OK)
         std::cout << "Glew error" << std::endl;
@@ -164,13 +166,28 @@ int main(void)
     unsigned int shader = CreateShader(source.VertexSoruce, source.FragmentSoruce);
     GLCall(glUseProgram(shader));
 
+    GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+    ASSERT(location != -1);
+    GLCall(glUniform4f(location, .5f, .3f, .8f, 1.0f));
+
+    float r = 0.0f;
+    float increment = 0.05f;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        GLCall(glUniform4f(location, r, .3f, .8f, 1.0f));
         GLCall(glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr));
+
+        if (r > 1.0f)
+            increment = -.05f;
+        else if (r < 0.0f)
+            increment = .05f;
+
+        r += increment;
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -178,6 +195,8 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
     }
+
+    GLCall(glDeleteProgram(shader));
 
     glfwTerminate();
     return 0;

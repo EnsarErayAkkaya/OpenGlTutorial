@@ -29,6 +29,12 @@
     <ClCompile Include="src\Shader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\vendor\stb_image\stb_image.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.Shader" />
@@ -50,6 +56,12 @@
       <Filter>HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="src\Shader.h">
+      <Filter>HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\stb_image\stb_image.h">
+      <Filter>HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture.h">
       <Filter>HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>

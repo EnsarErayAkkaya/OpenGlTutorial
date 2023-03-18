@@ -14,6 +14,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -58,6 +61,9 @@ int main(void)
             2,3,0
         };
 
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
         unsigned int vao;
         GLCall(glGenVertexArrays(1, &vao));
         GLCall(glBindVertexArray(vao));
@@ -72,12 +78,14 @@ int main(void)
 
         IndexBuffer ib(indicies, 9);
 
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
 
         Shader shader("res/shaders/Basic.Shader");
         shader.Bind();
         //shader.SetUniform4f("u_Color", .5f, .3f, .8f, 1.0f);
+        shader.SetUniformMatrix4f("u_MVP", proj);
 
-        Texture texture("res/textures/coin.png");
+        Texture texture("res/textures/test.png");
         texture.Bind();
 
         shader.SetUniform1i("u_Texture", 0);

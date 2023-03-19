@@ -54,10 +54,10 @@ int main(void)
 
     {
         float positions[]  {
-            0.0f, 0.0f, 0.0f, 0.0f, // 0
-            100.0f, 0.0f, 1.0f, 0.0f, // 1
-            100.0f, 100.0f, 1.0f, 1.0f, // 2
-            0.0f, 100.0f, 0.0f, 1.0f, // 3
+            -50.0f, -50.0f, 0.0f, 0.0f, // 0
+             50.0f, -50.0f, 1.0f, 0.0f, // 1
+             50.0f,  50.0f, 1.0f, 1.0f, // 2
+            -50.0f,  50.0f, 0.0f, 1.0f, // 3
         };
 
         unsigned int indicies[] = {
@@ -83,7 +83,7 @@ int main(void)
         IndexBuffer ib(indicies, 9);
 
         glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-0, 0, 0));
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
         Shader shader("res/shaders/Basic.Shader");
         shader.Bind();
@@ -135,7 +135,8 @@ int main(void)
         //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
         //IM_ASSERT(font != NULL);
 
-        glm::vec3 translation(500, 0, 0);
+        glm::vec3 translationA(500, 0, 0);
+        glm::vec3 translationB(600, 200, 0);
 
         float r = 0.0f;
         float increment = 0.05f;
@@ -151,19 +152,24 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-
-            glm::mat4 mvp = proj * view * model;
-
             shader.Bind();
 
-            shader.SetUniformMatrix4f("u_MVP", mvp);
-            //shader.SetUniform4f("u_Color", r, .3f, .8f, 1.0f);
+            {
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
+                glm::mat4 mvp = proj * view * model;
+                shader.SetUniformMatrix4f("u_MVP", mvp);
+                
+                renderer.Draw(va, ib, shader);
+            }
 
-            va.Bind();
-            ib.Bind();
 
-            renderer.Draw(va, ib, shader);
+            {
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
+                glm::mat4 mvp = proj * view * model;
+                shader.SetUniformMatrix4f("u_MVP", mvp);
+
+                renderer.Draw(va, ib, shader);
+            }
 
             /*if (r > 1.0f)
                 increment = -.05f;
@@ -179,7 +185,8 @@ int main(void)
 
                 ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-                ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+                ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+                ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 
                 ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
                 ImGui::End();
